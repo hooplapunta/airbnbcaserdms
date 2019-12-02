@@ -1,5 +1,5 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2019-11-30 17:26:46.704
+-- Last modification date: 2019-11-30 18:23:44.855
 
 -- tables
 -- Table: Addon
@@ -118,7 +118,7 @@ CREATE TABLE HostReview (
 
 -- Table: Message
 CREATE TABLE Message (
-    message_id text  NOT NULL,
+    message_id serial  NOT NULL,
     sent_to text  NOT NULL,
     sent_by text  NOT NULL,
     message_text text  NOT NULL,
