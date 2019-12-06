@@ -32,16 +32,16 @@ def print_rows(rows):
 # QUERY DEFINITION GOES HERE
 #------------------------------------------------------------    
 
-def new_review(host_review_id, confirmation_id, checkin_score, location_score, value_score, communication_score, accuracy_score, cleanliness_score, review_text, review_datetime):
+def new_review(confirmation_id, checkin_score, location_score, value_score, communication_score, accuracy_score, cleanliness_score, review_text, review_datetime):
     
     dob_obj = datetime.datetime.strptime(review_datetime, '%Y-%m-%d')
     
     tmpl = '''
-        INSERT INTO "hostreview" (host_review_id, confirmation_id, checkin_score, location_score, value_score, communication_score, accuracy_score, cleanliness_score, review_text, review_datetime)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO "hostreview" (confirmation_id, checkin_score, location_score, value_score, communication_score, accuracy_score, cleanliness_score, review_text, review_datetime)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
     '''
     
-    cmd = cur.mogrify(tmpl, (host_review_id, confirmation_id, checkin_score, location_score, value_score, communication_score, accuracy_score, cleanliness_score, review_text, review_datetime))
+    cmd = cur.mogrify(tmpl, (confirmation_id, checkin_score, location_score, value_score, communication_score, accuracy_score, cleanliness_score, review_text, review_datetime))
     print_cmd(cmd)
     cur.execute(cmd)
     
@@ -87,7 +87,7 @@ con.autocommit = True
 cur = con.cursor()
 
 # CALL TO QUERY GOES HERE:
-new_review('6', '1', '1', '1', '1', '1', '1', '1', 'bad!!!', '1990-05-05')
+new_review('1', '1', '1', '1', '1', '1', '1', 'bad!!!', '1990-05-05')
 
 cur.close()
 con.close()
