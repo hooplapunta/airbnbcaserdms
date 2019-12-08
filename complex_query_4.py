@@ -30,30 +30,26 @@ def print_rows(rows):
 # QUERY DEFINITION GOES HERE
 #------------------------------------------------------------    
 
-def return_fn(invoice_number):
+def return_fn(confirmation_id):
 	#given reservation id
 	#reverse all items in the payment and payout tables
 	tmpl = '''
 		CREATE VIEW Temp AS
 		SELECT * 
 		  FROM "payout"
-		 WHERE "invoice_number" = %s;
-
-		DELETE FROM "payout"
-		 WHERE "invoice_number" = %s;
+		 WHERE "confirmation_id" = %s;
 
 		INSERT INTO "payout" (amount, transaction_datetime)
-		(SELECT * FROM "payment"
-				 WHERE "invoice_number" = %s);
-
-		DELETE FROM "payment" 
-		 WHERE "invoice_number" = %s;
+		(SELECT amount, transaction_datetime
+		   FROM "payment"
+		  WHERE "confirmation_id" = %s);
 
 		INSERT INTO "payout" (amount, transaction_datetime)
-		(SELECT * FROM Temp
-		  WHERE "invoice_number" = %s);
+		(SELECT amount, transaction_datetime
+		   FROM Temp
+		  WHERE "confirmation_id" = %s);
 	'''
-	cmd = cur.mogrify(tmpl, (invoice_number, invoice_number, invoice_number, invoice_number, invoice_number))
+	cmd = cur.mogrify(tmpl, (confirmation_id, confirmation_id, confirmation_id))
 	print_cmd(cmd)
 	cur.execute(cmd)
 
@@ -83,8 +79,9 @@ So that I can facilitate a return between host and guest
 '''
 
 query_description = '''
-We will switch the payment and payout tables for a given reservation
-such that the amount is refunded.
+When given the confirmation_id of the reservation, we will switch 
+the payment and payout tables for a given reservation such that 
+the amount is refunded.
 '''
 
 print()
