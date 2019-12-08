@@ -31,33 +31,48 @@ def print_rows(rows):
 #------------------------------------------------------------    
 
 def return_fn(confirmation_id):
-	#given reservation id
-	#reverse all items in the payment and payout tables
+	#given confirmation id
+	#reverse and insert all items in the payment and payout tables with that confirmation id
 	tmpl = '''
 		CREATE VIEW Temp AS
 		SELECT * 
 		  FROM "payout"
 		 WHERE "confirmation_id" = %s;
 
-		INSERT INTO "payout" (amount, transaction_datetime)
-		(SELECT amount, transaction_datetime
+		INSERT INTO "payout" (paymentoption_id, amount, transaction_datetime)
+		(SELECT paymentoption_id, amount, transaction_datetime
 		   FROM "payment"
 		  WHERE "confirmation_id" = %s);
 
-		INSERT INTO "payout" (amount, transaction_datetime)
-		(SELECT amount, transaction_datetime
+		INSERT INTO "payout" (paymentoption_id, amount, transaction_datetime)
+		(SELECT paymentoption_id, amount, transaction_datetime
 		   FROM Temp
 		  WHERE "confirmation_id" = %s);
+
+		DROP VIEW Temp;
 	'''
-	cmd = cur.mogrify(tmpl, (confirmation_id, confirmation_id, confirmation_id))
-	print_cmd(cmd)
-	cur.execute(cmd)
+	#cmd = cur.mogrify(tmpl, (confirmation_id, confirmation_id, confirmation_id))
+	#print_cmd(cmd)
+	#cur.execute(cmd)
 
 	tmpl = '''
 		SELECT *
-		  FROM "payout" as p;
+		  FROM "payout" as p
+		 WHERE "confirmation_id" = %s;
 	'''
-	cmd = cur.mogrify(tmpl)
+	tup = tuple([confirmation_id])
+	cmd = cur.mogrify(tmpl, tup)
+	print_cmd(cmd)
+	cur.execute(cmd)
+	rows = cur.fetchall()
+	print_rows(rows)
+
+	tmpl = '''
+		SELECT *
+		  FROM "payment" as p
+		 WHERE "confirmation_id" = %s;
+	'''
+	cmd = cur.mogrify(tmpl, tup)
 	print_cmd(cmd)
 	cur.execute(cmd)
 	rows = cur.fetchall()
